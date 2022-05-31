@@ -135,3 +135,4 @@ data_name.txt
 usrs_info.pickle
 *.png
 __pycache__/
+*.joblib

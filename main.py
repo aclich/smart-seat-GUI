@@ -1,34 +1,13 @@
-from ast import Global
-from base64 import decode
-from cProfile import label, run
-from cgitb import text
-from distutils.command.upload import upload
-from fileinput import filename
-from msilib.schema import ComboBox
-import numbers
-from operator import itemgetter
-from textwrap import indent
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import pickle
 from tkinter.constants import ANCHOR, S, TOP, X
-from tkinter.filedialog import asksaveasfile
-from turtle import color
-from typing import List, Text
-import random
-import time
 from tkinter import *
-from matplotlib import lines
 from matplotlib.pyplot import get
 # from typing_extensions import Self
-import numpy as np
-import PIL
 import serial
-from serial.serialwin32 import Serial
-from serial.serialutil import Timeout
 import os
-from os import path, access, R_OK
 import PIL.ImageGrab as ImageGrab
 from http_request import backend_connenct
 import json
