@@ -1,12 +1,13 @@
-from itertools import tee
 import requests
 from requests import session
 import unicodedata
 import json
+from config import Config
+
+conf = Config()
 
 s = requests.session()
-server = "http://127.0.0.1:5000"
-heroku_server = "https://vast-citadel-64102.herokuapp.com"
+server = conf.server_url
 class backend_connenct(object):
     def __init__(self):
         self.session = session()
@@ -14,7 +15,7 @@ class backend_connenct(object):
         self.user_name = ""
         self.user_role = ""
 
-    def login_server(self, email: str = "sa_email@example.com", password: str = "super_admin_pwd", api_server = server) -> bool:
+    def login_server(self, email: str = conf.sa_email, password: str = conf.sa_pwd, api_server = server) -> bool:
         try:
             r = self.session.post(f"{api_server}/auth/login",
                                   json={'email':email, 'password': password})
@@ -35,7 +36,13 @@ class backend_connenct(object):
     # import backend
     def get_seat_list(self):
         r = self.session.get(f"{server}/seat/manage")
-        return r.json()['data']
+        if r.status_code != 200:
+            raise Exception(f"{r.json()}")
+        try:
+            return r.json()['data']
+        except KeyError as e:
+            print(f"{e}", r.json())
+            return f"{e}, {r.json()}"
 
 if __name__ == "__main__":
     connector = backend_connenct()
