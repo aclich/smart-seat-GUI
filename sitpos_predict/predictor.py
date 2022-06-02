@@ -128,13 +128,18 @@ class classifier(object):
         joblib.dump(self.rf_cls, os.path.join(BASE_PATH, "./rf_predictor_last.joblib"))
 
     def predict(self, model, x):
-        return self.loaded_tree.predict(x)
+
+        if model == "RF":
+            return CLASS_MAP[self.loaded_tree.predict([x])[0]]
+        if model == "DNN":
+            raise Exception("還沒做好")
 
     def predict_all(self, model="RF"):
         data_list, target_list = gen_training_data(file_path=self.data_path, pred_all=True)
         if model == "RF":
             self.load_tree()
             pred_list = self.loaded_tree.predict(data_list)
+            self._check_ans(y_pred=pred_list, y_test=[d['ans'] for d in target_list])
             for p, d in zip(pred_list, target_list):
                 if p != d['ans']:
                     print(f"{d['name']}_{d['time']} pred:{CLASS_MAP[p]}, ans:{CLASS_MAP[d['ans']]}")

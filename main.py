@@ -4,7 +4,7 @@ from tkinter import messagebox
 import pickle
 from tkinter.constants import ANCHOR, S, TOP, X
 from tkinter import *
-from matplotlib.pyplot import get
+from matplotlib.pyplot import get, text
 # from typing_extensions import Self
 import serial
 import os
@@ -13,6 +13,8 @@ from http_request import backend_connenct
 import json
 from datetime import datetime
 from config import Config
+from sitpos_predict.predictor import classifier
+predictor = classifier()
 
 conf = Config()
 connector = backend_connenct()
@@ -166,6 +168,10 @@ def login_gui():
             data_dict['gender'] = gender
             data_dict['height'] = height
             data_dict['weight'] = weight
+            x = [*data_dict['data'], int(data_dict['gender']), float(data_dict['height']), float(data_dict['weight'])]
+            sit_pose: str = predictor.predict(model="RF", x=x)
+            status_lb = tk.Label(gui, text=sit_pose, font="微軟正黑體 12", width=15)
+            status_lb.place(x=180, y=760)
             data_list.append(data_dict)
             # fp.write(json.dumps([(value + value2)[v] for v in data_order]) + '\n')
             # fp.close()
@@ -1203,6 +1209,9 @@ def login_gui():
 
     Label4 = tk.Label(gui, text="Select : ", font="Arial 12")
     Label4.place(x=120, y=700)
+
+    Label5 = tk.Label(gui, text="Status : ", font="Arial 12")
+    Label5.place(x=120, y=760)
     
 
     # (1)坐姿-正 (2)坐姿-偏左 (3)坐姿-偏右 (4)坐姿-翹右腳 (5)坐姿-翹左腳 (6)坐姿-翹右二郎腿 
