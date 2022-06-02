@@ -22,14 +22,15 @@ class backend_connenct(object):
             msg = unicodedata.normalize("NFKD", r.text)
             print(f"status={r.status_code}, text={msg}")
         except Exception as e:
-            print(f"登入發生錯誤! 錯誤原因{e}" )
-            return False
+            e_msg = f"登入發生錯誤! 錯誤原因{e}"
+            print(e_msg)
+            return (False, e_msg)
         if r.status_code == 200:
             data = json.loads(msg)
             self.user_name = data['username']
             self.user_role = data['userrole']
             self.login_status = True
-        return True if r.status_code == 200 else False
+        return (True, "") if r.status_code == 200 else (False, r.json()['message'])
 
     def record_data(self, data: str):
         pass

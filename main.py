@@ -12,7 +12,9 @@ import PIL.ImageGrab as ImageGrab
 from http_request import backend_connenct
 import json
 from datetime import datetime
+from config import Config
 
+conf = Config()
 connector = backend_connenct()
 SerialIn = serial.Serial('COM8', 9600, timeout=0.1) #bytesize=serial.EIGHTBITS
 SerialIn2 = serial.Serial('COM10', 9600, timeout=0.1)
@@ -35,12 +37,12 @@ lb2 = tk.Label(win, text="Password : ")
 lb2.place(x=50, y=190)
 
 var_usr_name = tk.StringVar()
-var_usr_name.set('admin')
+var_usr_name.set(conf.sa_email)
 entry_usr_name = tk.Entry(win, textvariable=var_usr_name)
 # entry_usr_name = tk.Entry(win)
 entry_usr_name.place(x=130, y=150)
 var_usr_pwd = tk.StringVar()
-var_usr_pwd.set('admin')
+var_usr_pwd.set(conf.sa_pwd)
 entry_usr_pwd = tk.Entry(win, textvariable=var_usr_pwd, show='*')
 # entry_usr_pwd = tk.Entry(win, show='*')
 entry_usr_pwd.place(x=130, y=190)
@@ -75,11 +77,14 @@ def usr_login():
 def user_login_web():
     usr_name = var_usr_name.get()
     usr_pwd = var_usr_pwd.get()
-    login_res = connector.login_server(email=usr_name, password=usr_pwd)
+    login_res, l_msg = connector.login_server(email=usr_name, password=usr_pwd)
     if login_res:
         print("登入成功!")
+        tk.messagebox.showinfo(title='Welcome', message='Welcome! ' + connector.user_name)
+        login_gui()
     else:
         print("登入失敗!")
+        tk.messagebox.showinfo(title='Fail', message=f'Login fail! {l_msg}')
 
 #當登入成功時顯示的坐墊畫面
 running = False
@@ -1361,7 +1366,7 @@ def usr_sign_up():
 
 
 # login and sign up button
-btn_login = tk.Button(win, text='Login', command=usr_login)
+btn_login = tk.Button(win, text='Login', command=user_login_web)
 btn_login.place(x=100, y=230)
 btn_sign_up = tk.Button(win, text='Sign up', command=usr_sign_up)
 btn_sign_up.place(x=200, y=230)
