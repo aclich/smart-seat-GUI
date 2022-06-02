@@ -136,3 +136,4 @@ usrs_info.pickle
 *.png
 __pycache__/
 *.joblib
+config.py
