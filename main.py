@@ -1,3 +1,5 @@
+from ntpath import join
+from tabnanny import check
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -1033,7 +1035,9 @@ def login_gui():
         data_json = {}
         data_json['name'] = file_name[:-4]
         data_json['data'] = data_list
-        json_file = open(os.path.join(folder_name, f"{data_json['name']}.json"), "w+", encoding="utf-8")
+        json_file = open(os.path.join('./data', f"{data_json['name']}.json"), "w+", encoding="utf-8")
+        print(datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")+"\n")
+        print(data_json)
         json.dump(data_list, json_file, indent=1, ensure_ascii=False)
         # json_file = open("%s/json.txt" %folder_name, "a+")
         # json_file.write(datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")+"\n"+str(data_json)+"\n")
@@ -1042,8 +1046,6 @@ def login_gui():
         # json_file2 = open("sample_data2.json", "a+")
         # json_file2.write(datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")+"\n"+data_json+"\n")
         # json_file2.close 
-        print(datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")+"\n")
-        print(data_json)
 
 
     def start_60s():
@@ -1058,9 +1060,7 @@ def login_gui():
         if seconds <15 :
             seconds += 1 
             pic_name = "Photo" + str(seconds) + ".png"
-            data_name = open("data_name.txt", "r").read()
-            data_name = data_name.split(",")
-            folder_name = data_name[0]
+            folder_name = get_data_name()[0]
             #ImageGrab.grab(bbox=(x1, y1, x2, y2)).save('/Users/a3974/Desktop/Python code/%s/%s' %(folder_name, pic_name))
             ImageGrab.grab(bbox=(x1, y1, x2, y2)).save(os.path.join(folder_name, pic_name))
             gui.after(1000, start_60s)                           #每過1000ms刷新一次
@@ -1157,6 +1157,11 @@ def login_gui():
             
             folder_name = Entry.get()
             file_name = Entry.get() + "_record.txt"
+            data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+            if not os.path.isdir(data_path):
+                os.mkdir(data_path)
+            folder_name = os.path.join(data_path, folder_name)
+            print(folder_name)
             if os.path.isdir(folder_name):
 
                 messagebox.showerror("Error", "The file name is already exists!")
@@ -1178,7 +1183,7 @@ def login_gui():
         Button.place(x=350, y=15)
 
                                                                                                                                                                             
-    def get_user_seat_list() -> list:
+    def get_user_seat_list() -> list:                              #取得坐墊型號
         seat_list = connector.get_seat_list()
         cb_value = []
         for d in seat_list:
@@ -1189,18 +1194,7 @@ def login_gui():
     def get_seat(seat_name: str) -> dict:
         return seat_map[seat_name]
 
-    def save():
-        status_name = cb.get()
-        data_name = open("data_name.txt", "r").read()
-        data_name = data_name.split(",")
-        folder_name = data_name[0]
-        fp = open("%s/Status.txt" %(folder_name), "a+")
-        fp.write(status_name)
-        fp.write("\n")
-        fp.close()
-
-        
-
+    
     Label2 = tk.Label(gui, text="File : ", font="Arial 12")
     Label2.place(x=120, y=580)
 
@@ -1222,23 +1216,10 @@ def login_gui():
     cb.place(x=180, y=640)
 
     
-    cb2 = ttk.Combobox(gui, value=get_user_seat_list(), width=16, state="readonly")
+    cb2 = ttk.Combobox(gui, value=get_user_seat_list(), width=16, state="readonly")             #顯示使用者帳號中已註冊的坐墊
     cb2.current(0)
     cb2.place(x=180, y=700)
 
-    def output():
-        seat = get_seat(cb2.get())
-        print(seat)
-        print(seat['id'])
-
-    # bt3 = tk.Button(gui, text="output", command=output)
-    # bt3.place(x=325, y=695)
-
-    # save_btn = tk.Button(gui, text="Save", command=save)
-    # save_btn.place(x=325, y=635)
-
-    # json_btn = tk.Button(gui, text="Process", command=get_json)
-    # json_btn.place(x=370, y=635)
 
     sit_frame = LabelFrame(gui, text="坐姿對照表", labelanchor=N, font="標楷體 11 ",fg="brown")
     sit_frame.place(x=330, y=630, width=200, height=90)
@@ -1380,5 +1361,42 @@ btn_login.place(x=100, y=230)
 btn_sign_up = tk.Button(win, text='Sign up', command=usr_sign_up)
 btn_sign_up.place(x=200, y=230)
 
+def developer_mode():
+    dev = tk.Toplevel(win)
+    dev.geometry('370x100+200+200')
+    dev.title('Check user')
+
+    name_Label = tk.Label(dev, text="User name : ")
+    name_Label.place(x=20, y=20)
+
+    name_var = tk.StringVar()
+    name_var.set("123")
+    name_ent = tk.Entry(dev, width=25, textvariable=name_var)
+    name_ent.place(x=100, y=20)
+
+    pwd_Label = tk.Label(dev, text="Password :")
+    pwd_Label.place(x=20, y=60)
+
+    pwd_var = tk.StringVar()
+    pwd_var.set("123")
+    pwd_entry = tk.Entry(dev, width=25, textvariable=pwd_var, show="*")
+    pwd_entry.place(x=100, y=60)
+
+
+    def check123():
+        dev_name = name_ent.get()
+        dev_pwd = pwd_entry.get()
+        if dev_name == "123" and dev_pwd =="123":
+            tk.messagebox.showinfo(title='Welcome', message='Welcome!')
+            login_gui()
+            dev.destroy()
+        else : 
+            tk.messagebox.showerror(message='Error, your password is wrong, please try again!')
+
+    login_btn = tk.Button(dev, text="login", command=check123)
+    login_btn.place(x=300, y=40)
+
+test_page_btn = tk.Button(win, text="Developer", command=developer_mode)
+test_page_btn.place(x=360, y=260)
 
 win.mainloop()

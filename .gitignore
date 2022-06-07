@@ -137,3 +137,4 @@ usrs_info.pickle
 __pycache__/
 *.joblib
 config.py
+data/
