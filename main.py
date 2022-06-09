@@ -19,8 +19,11 @@ predictor = classifier()
 
 conf = Config()
 connector = backend_connenct()
-SerialIn = serial.Serial('COM8', 9600, timeout=0.1) #bytesize=serial.EIGHTBITS
-SerialIn2 = serial.Serial('COM10', 9600, timeout=0.1)
+try:
+    SerialIn = serial.Serial('COM8', 9600, timeout=0.1) #bytesize=serial.EIGHTBITS
+    SerialIn2 = serial.Serial('COM10', 9600, timeout=0.1)
+except:
+    print("沒有偵測到坐墊!")
 
 win = tk.Tk()
 win.title('Welcome')
@@ -106,12 +109,21 @@ def login_gui():
 
     mycanvas = tk.Canvas(gui, width=500, height=500, bg='black')
     mycanvas.place(x=20, y=20)
-    sensors, labels, label_y = [], [], 10
+    sensors, labels, label_y = [], [], 0
+
+    ########顯示標籤############################################
+    labframe = LabelFrame(gui, text="Sensor value", font="Arial 12", labelanchor=N)
+    labframe.place(x=550, y=15, height=780, width=130)
+
     for y in range(0, 500, 100):
         for x in range(0,500, 100):
             sensors.append(mycanvas.create_rectangle(x, y, x+100, y+100, fill="white"))
-            labels.append(tk.Label(gui, text=0).place(x=65, y=label_y))
-            label_y += 30
+            l_y = label_y*30+10
+            tk.Label(labframe, text=f"Sensor{label_y+1} : ").place(x=5, y=l_y)
+            s_label =  tk.Label(labframe, text=0)
+            s_label.place(x=65, y=l_y)
+            labels.append(s_label)
+            label_y += 1
 
     timming = tk.Label(gui, text="Timer : ", font="Arial 18", width=5)
     timming.place(x=395, y=530)
@@ -188,8 +200,6 @@ def login_gui():
         data_json['name'] = file_name[:-4]
         data_json['data'] = data_list
         json_file = open(os.path.join('./data', f"{data_json['name']}.json"), "w+", encoding="utf-8")
-        print(datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")+"\n")
-        print(data_json)
         json.dump(data_list, json_file, indent=1, ensure_ascii=False)
         print(datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")+"\n")
         print(data_json)
@@ -207,7 +217,7 @@ def login_gui():
         if seconds <15 :
             seconds += 1 
             pic_name = "Photo" + str(seconds) + ".png"
-            folder_name = get_data_name()[0]
+            folder_name = get_data_info()[0]
             #ImageGrab.grab(bbox=(x1, y1, x2, y2)).save('/Users/a3974/Desktop/Python code/%s/%s' %(folder_name, pic_name))
             ImageGrab.grab(bbox=(x1, y1, x2, y2)).save(os.path.join(folder_name, pic_name))
             gui.after(1000, start_60s)                           #每過1000ms刷新一次
@@ -385,13 +395,6 @@ def login_gui():
 
     capture1 = tk.Button(start_frame, text='Capture', command=capture)
     capture1.place(x=10, y=85)
-    ############################################################
-    
-    ########顯示標籤############################################
-    labframe = LabelFrame(gui, text="Sensor value", font="Arial 12", labelanchor=N)
-    labframe.place(x=550, y=15, height=780, width=130)
-    for lb_x in range(25):
-        tk.Label(labframe, text=f"Sensor{lb_x+1} : ").place(x=5, y=lb_x*30+10)    
     ############################################################
 
     gui.after(500, btn_color_continuously)
