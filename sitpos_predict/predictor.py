@@ -13,7 +13,6 @@ import argparse
 
 from sqlalchemy import false
 parser = argparse.ArgumentParser()
-parser
 
 
 CLASS_MAP={
@@ -139,10 +138,10 @@ class classifier(object):
         if model == "RF":
             self.load_tree()
             pred_list = self.loaded_tree.predict(data_list)
-            self._check_ans(y_pred=pred_list, y_test=[d['ans'] for d in target_list])
             for p, d in zip(pred_list, target_list):
                 if p != d['ans']:
                     print(f"{d['name']}_{d['time']} pred:{CLASS_MAP[p]}, ans:{CLASS_MAP[d['ans']]}")
+            self._check_ans(y_pred=pred_list, y_test=[d['ans'] for d in target_list])
         else:
             print("not support")
             pass
