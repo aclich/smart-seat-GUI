@@ -1,12 +1,9 @@
-from ntpath import join
-from tabnanny import check
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import pickle
 from tkinter.constants import ANCHOR, S, TOP, X
 from tkinter import *
-import serial
 import os
 from PIL import ImageGrab
 from http_request import backend_connenct
@@ -14,7 +11,8 @@ import json
 from datetime import datetime
 from config import Config
 from sitpos_predict.predictor import classifier
-from utils import pressure_cvt_color
+from utils.utils import pressure_cvt_color
+from utils import serial_port as serial
 predictor = classifier()
 
 conf = Config()
@@ -139,11 +137,11 @@ def login_gui():
         if running :
             SerialIn.write('s'.encode())                                  #字元s與Arduino-Mega#1溝通
             response = SerialIn.readall()
-            value1 = [int(i.decode("utf-8")) for i in response.split()]
+            value1 = [int(i) for i in response.split()]
 
             SerialIn2.write('h'.encode())                                 #字元h與Arduino-Mega#2溝通
             response2 = SerialIn2.readall()
-            value2 = [int(i.decode("utf-8")) for i in response2.split()]
+            value2 = [int(i) for i in response2.split()]
             
             
             data_dict = {}
