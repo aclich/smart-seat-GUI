@@ -16,4 +16,12 @@ def pressure_cvt_color(pres: int) -> str:
             return "#FF0000"
         diff = 255 - int((pres - 512)*scale)
         clr = f"#FF{int2hex(diff).zfill(2)}00"
-    return clr.upper()              
+    return clr.upper()
+
+def sit_pose_static(pose_dict: dict):
+    static_dict = {}
+    total = pose_dict['總計']
+    for k, v in pose_dict.items():
+        if k != '總計':
+            static_dict[k] = f"{(round(v / total * 100, 2))}%"
+    return static_dict
