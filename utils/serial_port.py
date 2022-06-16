@@ -24,14 +24,20 @@ class Serial(serial.Serial):
         data = data.encode() if isinstance(data, str) else data
         super().write(data)
 
+    def decode(func):
+        def wrap(self, d: bool=True, *args):
+            output = getattr(super(), func.__name__)(*args)
+            if d: return output if isinstance(output, str) else output.decode().strip()
+            return output
+        return wrap
 
-    def read_all(self):
-        output = super().read_all()
-        return output if isinstance(output, str) else output.decode().strip()
+    @decode
+    def read_all(self, d: bool=True):
+        pass
 
-    def readline(self, __size: int = None) -> str:
-        output = super().readline(__size)
-        return output if isinstance(output, str) else output.decode().strip()
+    @decode
+    def readline(self, d: bool=True, __size: int = None) -> str:\
+        pass
 
 def list_serial_ports():
     """ Lists serial port names
