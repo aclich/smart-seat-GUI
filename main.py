@@ -10,9 +10,9 @@ from http_request import backend_connenct
 import json
 from datetime import datetime
 from config import Config
-from sitpos_predict.predictor import classifier
-from utils.utils import pressure_cvt_color
+from utils.utils import pressure_cvt_color, sit_pose_static
 from utils import serial_port as serial
+from sitpos_predict.predictor import classifier, CLASS_MAP
 predictor = classifier()
 
 conf = Config()
@@ -55,6 +55,9 @@ data_list = []
 data_order = [0,1,2,3,16,4,5,6,7,17,8,9,10,11,18,12,13,14,15,19,20,21,22,23,24]
 
 seat_map = {}
+
+pose_dict = {v:0 for v in [*CLASS_MAP.values(), "總計"]}
+
 # 登入按鈕檢查帳號是否存在
 def usr_login():
     usr_name = var_usr_name.get()
@@ -134,6 +137,7 @@ def login_gui():
 
     #Start, Stop 連續顯示顏色並暫停
     def btn_color_continuously():
+        global pose_dict
         if running :
             SerialIn.write('s'.encode())                                  #字元s與Arduino-Mega#1溝通
             response = SerialIn.readall()
@@ -158,6 +162,9 @@ def login_gui():
             data_dict['weight'] = weight
             x = [*data_dict['data'], int(data_dict['gender']), float(data_dict['height']), float(data_dict['weight'])]
             sit_pose: str = predictor.predict(model="RF", x=x)
+            pose_dict[sit_pose] += 1
+            pose_dict["總計"] += 1
+            print(sit_pose_static(pose_dict))
             status_lb = tk.Label(gui, text=sit_pose, font="微軟正黑體 12", width=15)
             status_lb.place(x=180, y=760)
             data_list.append(data_dict)
