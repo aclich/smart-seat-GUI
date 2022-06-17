@@ -84,9 +84,9 @@ def init_boards() -> Tuple[Serial, Serial]:
             s.write('w')
             ans = s.readline()
             print(f"port:{port} board:{ans}")
-            if ans == 'b1':
+            if ans == 'B1':
                 board1 = s
-            elif ans == 'b2':
+            elif ans == 'B2':
                 board2 = s
             else:
                 s.close()
