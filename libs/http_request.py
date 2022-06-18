@@ -2,7 +2,7 @@ import requests
 from requests import session
 import unicodedata
 import json
-from config import Config
+from libs.config import Config
 
 conf = Config()
 

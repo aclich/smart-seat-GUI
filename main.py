@@ -1,27 +1,28 @@
-import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
-import pickle
-from tkinter.constants import ANCHOR, S, TOP, X
-from tkinter import *
-import os
-from PIL import ImageGrab
-from http_request import backend_connenct
 import json
+import os
+import pickle
+import tkinter as tk
 from datetime import datetime
-from config import Config
-from utils.utils import pressure_cvt_color, sit_pose_static
-from utils import serial_port as serial
-from sitpos_predict.predictor import classifier, CLASS_MAP
+from tkinter import *
+from tkinter import messagebox, ttk
+from tkinter.constants import ANCHOR, TOP, S, X
+
+from PIL import ImageGrab
+
+from libs.config import CLASS_MAP, Config
+from libs.http_request import backend_connenct
+from libs.sensor.serial_port import init_boards
+from libs.sitpos_predict.classifier import classifier
+from libs.utils import pressure_cvt_color, sit_pose_static
+
 predictor = classifier()
 
 conf = Config()
 connector = backend_connenct()
-try:
-    SerialIn = serial.Serial('COM8', 9600, timeout=0.1) #bytesize=serial.EIGHTBITS
-    SerialIn2 = serial.Serial('COM10', 9600, timeout=0.1)
-except:
-    print("沒有偵測到坐墊!")
+# try:
+sensor_seat = init_boards()
+# except:
+#     print("沒有偵測到坐墊!")
 
 win = tk.Tk()
 win.title('Welcome')
@@ -52,7 +53,6 @@ entry_usr_pwd = tk.Entry(win, textvariable=var_usr_pwd, show='*')
 entry_usr_pwd.place(x=130, y=190)
 # data_dict = {"data": []}
 data_list = []
-data_order = [0,1,2,3,16,4,5,6,7,17,8,9,10,11,18,12,13,14,15,19,20,21,22,23,24]
 
 seat_map = {}
 
@@ -138,16 +138,7 @@ def login_gui():
     #Start, Stop 連續顯示顏色並暫停
     def btn_color_continuously():
         global pose_dict
-        if running :
-            SerialIn.write('s'.encode())                                  #字元s與Arduino-Mega#1溝通
-            response = SerialIn.readall()
-            value1 = [int(i) for i in response.split()]
-
-            SerialIn2.write('h'.encode())                                 #字元h與Arduino-Mega#2溝通
-            response2 = SerialIn2.readall()
-            value2 = [int(i) for i in response2.split()]
-            
-            
+        if running:
             data_dict = {}
             folder_name, file_name, height, weight, gender = get_data_info()
             # data_dict['name'] = file_name[:-4]
@@ -155,7 +146,7 @@ def login_gui():
             data_dict['seat_id'] = seat['id']
             data_dict['seat_type'] = seat['seat_type']
             data_dict['time'] = datetime.strftime(datetime.now(), "%Y%m%d %H:%M:%S")
-            data_dict['data'] = [(value1 + value2)[v] for v in data_order]
+            data_dict['data'] = sensor_seat.get_sensor_value()
             data_dict['sit_pos'] = cb.get()
             data_dict['gender'] = gender
             data_dict['height'] = height

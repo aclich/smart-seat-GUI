@@ -23,11 +23,18 @@ and change the directory
 5. Run the application
     - `python main.py`
 
+### Project Setup
+1. Copy libs/sample_config.py -> libs/config.py
+   - `cp libs/sample_config.py libs/config.py`
+2. Change config in `libs/config.py` (option)
+3. run project
+   - `python main.py`
+
 ### Backend setup
 - https://github.com/aclich/smart-seat-api
 - TODO
 ### Arduino setup
-- TODO
+- Upload the Arduino code in `<this-repo>/arduino`, 2 boards needed.
 
 ## TODO  
 - REDME
@@ -41,9 +48,11 @@ and change the directory
   - models 
     - RF ✅
     - ANN
-  - real-time predict
+  - real-time predict 🚀
 - GUI
   - Login fail
   - Input Data check
-  - Page swithch(data collect & user mode)
-  - code rearrange
+  - Page swithch(data collect & user mode) 
+  - code rearrange 
+    - Serial port 🚀
+    - sensor GUI ✅
