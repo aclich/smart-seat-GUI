@@ -72,7 +72,6 @@ def usr_login():
     if usr_name in usrs_info:
         if usr_pwd == usrs_info[usr_name]:
             tk.messagebox.showinfo(title='Welcome', message='Welcome! ' + usr_name)
-            connector.login_server()  #記得要刪掉
             login_gui()
         else : 
             tk.messagebox.showerror(message='Error, your password is wrong, please try again!')
@@ -91,7 +90,12 @@ def user_login_web():
         login_gui()
     else:
         print("登入失敗!")
-        tk.messagebox.showinfo(title='Fail', message=f'Login fail! {l_msg}')
+        messagebox.showerror(title='Fail', message=f'Login fail! {l_msg}')
+        if messagebox.askquestion(title='warning', message='使用離線模式?') == 'yes':
+            messagebox.showinfo(title='offline', message='使用離線模式')
+            connector.login_status = False
+            login_gui()
+        
 
 #當登入成功時顯示的坐墊畫面
 running = False

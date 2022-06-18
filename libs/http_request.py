@@ -22,7 +22,7 @@ class backend_connenct(object):
             msg = unicodedata.normalize("NFKD", r.text)
             print(f"status={r.status_code}, text={msg}")
         except Exception as e:
-            e_msg = f"登入發生錯誤! 錯誤原因{e}"
+            e_msg = f"登入發生錯誤! 錯誤原因:{e}"
             print(e_msg)
             return (False, e_msg)
         if r.status_code == 200:
@@ -36,6 +36,9 @@ class backend_connenct(object):
         pass
     # import backend
     def get_seat_list(self):
+        if self.login_status is False:
+            print('離線模式')
+            return [{'seat_name': "offline", 'id': 144, 'seat_type': 1}]
         r = self.session.get(f"{server}/seat/manage")
         if r.status_code != 200:
             raise Exception(f"{r.json()}")
