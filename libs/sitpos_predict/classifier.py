@@ -1,6 +1,4 @@
-from ast import arg
-from cProfile import label
-from operator import le
+import argparse
 import os
 import json
 import joblib
@@ -9,25 +7,9 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from datetime import datetime
-import argparse
-
-from sqlalchemy import false
-parser = argparse.ArgumentParser()
+from libs.config import CLASS_MAP
 
 
-CLASS_MAP={
-  1:"坐姿-正",
-  2:"坐姿-偏左",
-  3:"坐姿-偏右",
-  4:"坐姿-翹右腳",
-  5:"坐姿-翹左腳",
-  6:"坐姿-翹右二郎腿",
-  7:"坐姿-翹左二郎腿",
-  8:"後仰"
-}
-
-
-# training_json_file_list = ["C:\\Users\\a3974\Desktop\Python code\\0525\\0525_record.json",]
 BASE_PATH = os.path.dirname(__file__)
 
 def gen_training_data(file_path: str, pred_all=False):
@@ -127,7 +109,6 @@ class classifier(object):
         joblib.dump(self.rf_cls, os.path.join(BASE_PATH, "./rf_predictor_last.joblib"))
 
     def predict(self, model, x):
-
         if model == "RF":
             return CLASS_MAP[self.loaded_tree.predict([x])[0]]
         if model == "DNN":
@@ -145,17 +126,3 @@ class classifier(object):
         else:
             print("not support")
             pass
-
-if __name__ == "__main__":
-    # x_train, x_test, y_train, y_test = gen_training_data(BASE_PATH)
-    parser.add_argument("--train", help="run training script", action="store_true", default=False)
-    parser.add_argument("--predict", help="run predict script", action="store_true", default=False)
-    parser.add_argument("--model", help="select used model, default=RF", type=str, default="RF")
-    args = parser.parse_args()
-    print(args)
-    cls = classifier()
-    if args.train:
-        cls.train(model=args.model)
-    
-    if args.predict:
-        cls.predict_all(model=args.model)

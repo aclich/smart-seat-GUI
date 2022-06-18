@@ -63,9 +63,14 @@ void loop()
     else if ('w' == s_in) {
       Serial.println(BoardName);
     }
+    else if ('m' == s_in){
+      Serial.print("Board mode=");
+      Serial.println(mode);
+    }
     else if ('1' <= s_in <= '3') {
-      mode = int(s_in);
-      Serial.println("Set board mode="+s_in);
+      mode = s_in - '0'; // convert single Char to Int
+      Serial.print("Set board mode=");
+      Serial.println(s_in);
     }
   }
 }

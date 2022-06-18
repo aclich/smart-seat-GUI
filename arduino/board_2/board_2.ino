@@ -70,9 +70,14 @@ void loop()
     case 'w':
       Serial.println(BoardName);
       break;
+    case 'm':
+      Serial.print("Board mode=");
+      Serial.println(mode);
+      break;
     case '1': case '2': case '3':
-      mode = int(s_in);
-      Serial.println("Set board mode="+s_in);
+      mode = s_in - '0'; //convert single Char to Int
+      Serial.print("Set board mode=");
+      Serial.println(s_in);
       break;
     default:
       break;
