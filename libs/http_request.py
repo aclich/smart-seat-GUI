@@ -5,17 +5,31 @@ from requests import session
 import unicodedata
 import json
 from .config import SERIAL_RT_COUNT, SA_EMAIL, SA_PWD, SERVER_URL
+from GUI.pop_out import PopOutInfo
+
 
 s = requests.session()
 server = SERVER_URL
 
 class backend_connenct(object):
-    def __init__(self):
+    def __init__(self, mainapp: tk.Tk):
         self.session = session()
+        self.mainapp = mainapp
         self.login_status = False
         self.user_name = ""
         self.user_role = ""
 
+    def show_popout(func):
+        def wrap(self, *args, **kwargs):
+            self.pop_out = PopOutInfo(mainapp=self.mainapp).pop()
+            # self.pop_out.update_info('連線中.')
+            print('連線中')
+            result = func(self, *args, **kwargs)
+            self.pop_out.destroy()
+            return result
+        return wrap
+
+    @show_popout
     def login_server(self, email: str = SA_EMAIL, password: str = SA_PWD, api_server = server, rt_cnt:int = 0) -> bool:
         if rt_cnt > SERIAL_RT_COUNT:
             message=f'嘗試重新連線超過{SERIAL_RT_COUNT}次'
@@ -43,6 +57,7 @@ class backend_connenct(object):
     def record_data(self, data: str):
         pass
 
+    @show_popout
     def get_seat_list(self, rt_cnt: int=0):
         if self.login_status is False:
             print('離線模式')
