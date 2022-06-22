@@ -124,30 +124,30 @@ def init_boards() -> Sensor_Board:
     for port in ports:
         try:
             s = Serial(port)
+            time.sleep(1.2)
             t_count = 0
             while(1):
-                if s.in_waiting() == 4: break
+                if s.in_waiting == 4: break
                 else: 
                     s.reset_input_buffer()
                     s.write('w')
                     t_count += 1
-                    time.sleep(0.1)
+                    time.sleep(0.2)
                 if t_count > SERIAL_RT_COUNT:
                     raise TimeoutError(f'board not response untill maximun retry count. ({SERIAL_RT_COUNT})')
-            print(f"port:{port} board:{ans}")
-
             ans = s.readline()
+            print(f"port:{port} board:{ans}")
             if ans == 'B1':
-                board1 = Serial(s)
+                board1 = s
             elif ans == 'B2':
-                board2 = Serial(s)
+                board2 = s
             
             s.reset_input_buffer()
             s.reset_output_buffer()
             t_count = 0
             while(t_count < SERIAL_RT_COUNT):
                 mod = s.write_readline(DEFAULT_BOARD_MODE) #設定板子預設模式
-                if mod.include(f"Set board mode={DEFAULT_BOARD_MODE}"):
+                if f"Set board mode={DEFAULT_BOARD_MODE}" in mod :
                     print(ans, mod)
                     break
                 t_count += 1
