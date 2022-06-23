@@ -8,7 +8,7 @@ class LoginPage(BasePopOut):
     def __init__(self, mainapp: tk.Tk):
         super().__init__(mainapp)
         self.mainapp = mainapp
-        self.mainapp.withdraw()  #隱藏主視窗
+        # self.mainapp.withdraw()  #隱藏主視窗
         
         self.title('Login')
         self.geometry('450x300+300+100')
@@ -70,7 +70,7 @@ class LoginPage(BasePopOut):
             self._login()
     
     def _login(self):
-        self.mainapp.deiconify()
+        # self.mainapp.deiconify()
         self.mainapp.login()
         self.destroy()
 

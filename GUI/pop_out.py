@@ -6,10 +6,9 @@ class BasePopOut(tk.Toplevel):
         super().__init__(mainapp)
         self.title(title)
         self.geometry(geometry)
-        self.update()
     
 class PopOutInfo(BasePopOut):
-    def __init__(self, mainapp: tk.Tk, title: str = "info", geometry: str = "200x100"):
+    def __init__(self, mainapp: tk.Tk, title: str = "info", geometry: str = "200x100+400+200"):
         super().__init__(mainapp, title, geometry)
         self.info_var = tk.StringVar(value='info...')
         self.info_label= tk.Label(self, textvariable=self.info_var)

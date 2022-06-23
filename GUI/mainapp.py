@@ -20,10 +20,10 @@ class MainApp(tk.Tk):
 
     
 
-    
+
     def login(self):
         print('main login')
-        self.geometry('700x800')
+        self.geometry('700x800+300+100')
         self.label = tk.Label(self, text=f'{self.connector.login_status}')
         self.label.pack()
         self.update()
