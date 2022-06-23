@@ -6,7 +6,7 @@ import unicodedata
 import json
 from .config import SERIAL_RT_COUNT, SA_EMAIL, SA_PWD, SERVER_URL
 from GUI.pop_out import PopOutInfo
-
+import asyncio
 
 s = requests.session()
 server = SERVER_URL
@@ -21,7 +21,8 @@ class backend_connenct(object):
 
     def show_popout(func):
         def wrap(self, *args, **kwargs):
-            self.pop_out = PopOutInfo(mainapp=self.mainapp).pop()
+            self.pop_out = PopOutInfo(mainapp=self.mainapp)
+            self.pop_out.pop()
             # self.pop_out.update_info('連線中.')
             print('連線中')
             result = func(self, *args, **kwargs)

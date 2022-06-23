@@ -14,6 +14,12 @@ class MainApp(tk.Tk):
         self.geometry(geometry)
         self.connector = backend_connenct(self)
         self.classifer = classifier()
+        self.mainframe = tk.Frame()
+
+        self.mainframe.pack(side='top', fill='both', expand=True)
+
+    
+
     
     def login(self):
         print('main login')

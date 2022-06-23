@@ -9,20 +9,21 @@ class BasePopOut(tk.Toplevel):
         self.update()
     
 class PopOutInfo(BasePopOut):
-    def __init__(self, mainapp: tk.Tk, title: str = "info", geometry: str = "300x100"):
+    def __init__(self, mainapp: tk.Tk, title: str = "info", geometry: str = "200x100"):
         super().__init__(mainapp, title, geometry)
         self.info_var = tk.StringVar(value='info...')
         self.info_label= tk.Label(self, textvariable=self.info_var)
         self.looping = False
+        self.mainapp = mainapp
         self._Layout()
-
-        self.withdraw()
+        self.update()
+        # self.withdraw()
 
     def _Layout(self):
-        return self.info_label.place(relx=0.5, rely=0.5)
+        return self.info_label.place(relx=0.4, rely=0.4)
 
     def pop(self):
-        self.deiconify()
+        # self.deiconify()
         self.looping = True
         self.pop_loop()
         return self
@@ -31,13 +32,16 @@ class PopOutInfo(BasePopOut):
         if self.looping is False:
             return
         cnt = 0 if cnt > 5 else cnt+1
-        self.info_var.set(f"{basetxt+sep*cnt}")
-        self.after(100, lambda: self.pop_loop(basetxt, sep, cnt))
+        print(f"\r{basetxt+(sep*cnt)}", cnt, end='')
+        self.info_var.set(f"{basetxt+(sep*cnt)}")
+        self.update()
+        self.mainapp.after(100, lambda: self.pop_loop(basetxt, sep, cnt))
 
     def update_info(self, txt:str):
         self.looping = False
         self.info_var.set(txt)
         return self.update()
-    
+
     def destroy(self) -> None:
+        self.looping = False
         return super().destroy()
