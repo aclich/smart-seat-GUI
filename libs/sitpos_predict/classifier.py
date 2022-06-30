@@ -108,9 +108,9 @@ class classifier(object):
         joblib.dump(self.rf_cls, os.path.join(BASE_PATH, f"./rf_predictor_{datetime.now().strftime('%Y%m%d_%H%M%S')}.joblib"))
         joblib.dump(self.rf_cls, os.path.join(BASE_PATH, "./rf_predictor_last.joblib"))
 
-    def predict(self, model, x):
+    def predict(self, model, x, cvt_ch:bool=True):
         if model == "RF":
-            return CLASS_MAP[self.loaded_tree.predict([x])[0]]
+            return CLASS_MAP[self.loaded_tree.predict([x])[0]] if cvt_ch else self.loaded_tree.predict([x])[0]
         if model == "DNN":
             raise Exception("還沒做好")
 

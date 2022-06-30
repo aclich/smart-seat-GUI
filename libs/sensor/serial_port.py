@@ -4,9 +4,10 @@ import sys
 import glob
 import serial
 import time
-from typing import List, Tuple
+from typing import List
 from libs.config import DEFAULT_BOARD_MODE, SERIAL_RT_COUNT, DATA_ORDER
 from libs.sensor.fake_serial import fake_serial
+from multiprocessing import Pool
 
 class Serial(serial.Serial):
     """Inheritance from pyserial serial.Serial class
@@ -83,7 +84,7 @@ def list_serial_ports():
         except (OSError, serial.SerialException):
             pass
     return result
-            
+
 
 class Sensor_Board(object):
     def __init__(self, board_1: Serial, board_2: Serial) -> None:
@@ -91,12 +92,12 @@ class Sensor_Board(object):
         self.board_2 = board_2
         self.boards = (self.board_1, self.board_2)
         self.mode = DEFAULT_BOARD_MODE
-    
+
     def set_board_mode(self, mode: int = DEFAULT_BOARD_MODE):
         for i, board in enumerate(self.boards, 1):
             print(f'B{i}', board.write_readline(f'{mode}'))
         self.mode = mode
-    
+
     def get_board_mode(self):
         res1 = self.board_1.write_readline('m')
         for b in self.boards:
@@ -113,7 +114,6 @@ class Sensor_Board(object):
         data = [(value1+value2)[i] for i in DATA_ORDER]
         return data
 
-
 def init_boards() -> Sensor_Board:
     """Init two arduino boards
     """
@@ -126,13 +126,11 @@ def init_boards() -> Sensor_Board:
             s = Serial(port)
             time.sleep(1.2)
             t_count = 0
-            while(1):
-                if s.in_waiting == 4: break
-                else: 
-                    s.reset_input_buffer()
-                    s.write('w')
-                    t_count += 1
-                    time.sleep(0.2)
+            while(s.in_waiting != 4):
+                s.reset_input_buffer()
+                s.write('w')
+                t_count += 1
+                time.sleep(0.2)
                 if t_count > SERIAL_RT_COUNT:
                     raise TimeoutError(f'board not response untill maximun retry count. ({SERIAL_RT_COUNT})')
             ans = s.readline()
@@ -155,7 +153,6 @@ def init_boards() -> Sensor_Board:
         except (serial.SerialException) as e:
             print(f"port:{port}, error:{e}")
             s.close()
-            continue
 
     return Sensor_Board(board_1=board1, board_2=board2)
 

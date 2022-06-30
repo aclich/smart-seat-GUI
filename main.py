@@ -15,16 +15,16 @@ from libs.sensor.serial_port import init_boards
 from libs.sitpos_predict.classifier import classifier
 from libs.utils import pressure_cvt_color, sit_pose_static
 
+win = tk.Tk()
 predictor = classifier()
 
 conf = Config()
-connector = backend_connenct()
+connector = backend_connenct(win)
 # try:
 sensor_seat = init_boards()
 # except:
 #     print("沒有偵測到坐墊!")
 
-win = tk.Tk()
 win.title('Welcome')
 win.geometry('450x300+300+100')
 win.resizable(0, 0)
@@ -107,10 +107,11 @@ value_list = list()
 value_list2 = list()
 
 def login_gui():
-    
+    win.withdraw()
     gui = tk.Toplevel(win)
     gui.geometry('700x800+150+0')
     gui.title('User window')
+    gui.protocol('WM_DELETE_WINDOW', win.destroy)
 
     mycanvas = tk.Canvas(gui, width=500, height=500, bg='black')
     mycanvas.place(x=20, y=20)
@@ -162,6 +163,7 @@ def login_gui():
             print(sit_pose_static(pose_dict))
             status_lb = tk.Label(gui, text=sit_pose, font="微軟正黑體 12", width=15)
             status_lb.place(x=180, y=760)
+            
             data_list.append(data_dict)
 
             if data_dict['data'] == []:                                                 #跳過delay時間
@@ -172,7 +174,7 @@ def login_gui():
                     label['text'] = val                                                 # 寫壓力值
 
             
-        gui.after(100, btn_color_continuously)
+        gui.after(500, btn_color_continuously)
   
     def start():
         """Enable running by setting the global flag to True."""
