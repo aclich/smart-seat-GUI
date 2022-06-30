@@ -5,18 +5,39 @@ from requests import session
 import unicodedata
 import json
 from .config import SERIAL_RT_COUNT, SA_EMAIL, SA_PWD, SERVER_URL
+from GUI.pop_out import BasePopOut, PopOutInfo
+import asyncio
 
 s = requests.session()
 server = SERVER_URL
 
 class backend_connenct(object):
-    def __init__(self):
+    def __init__(self, mainapp: tk.Tk):
         self.session = session()
+        self.mainapp = mainapp
         self.login_status = False
         self.user_name = ""
         self.user_role = ""
 
+    def show_popout(func):
+        def wrap(self, *args, **kwargs):
+            flag = False
+            if not hasattr(self, 'pop_out'):
+                self.pop_out = PopOutInfo(mainapp=self.mainapp)
+                self.pop_out.pop()
+                flag = True
+            # self.pop_out.update_info('連線中.')
+            print('連線中')
+            result = func(self, *args, **kwargs)
+            if flag:
+                self.pop_out.destroy()
+                delattr(self, 'pop_out')
+            return result
+        return wrap
+
+    @show_popout
     def login_server(self, email: str = SA_EMAIL, password: str = SA_PWD, api_server = server, rt_cnt:int = 0) -> bool:
+        self.api_server = api_server
         if rt_cnt > SERIAL_RT_COUNT:
             message=f'嘗試重新連線超過{SERIAL_RT_COUNT}次'
             return (False, message)
@@ -34,15 +55,33 @@ class backend_connenct(object):
             self.login_status = True
             return (True, "")
         elif data['message'] == '連線不穩定，請重新在試一次!':
-            print(f"連線不穩定，重試({rt_cnt})")
+            msg = f"連線不穩定，重試({rt_cnt})"
+            print(msg)
+            self.pop_out.update_info(msg)
             rt_cnt += 1
             return self.login_server(email, password, api_server, rt_cnt)
         else:
             return (False, data['message'])
 
-    def record_data(self, data: str):
-        pass
+    @show_popout
+    def record_data(self, file_path: str):
+        try:
+            js_data = json.load(open(file_path, 'r', encoding='utf-8'))
+            r = self.session.post(f"{self.api_server}/seat/data/upload-json/",
+                                  json=js_data)
+            if r.status_code != 200:
+                raise Exception(f"{r.json()}")
+            res_js = r.json()
+            messagebox.showinfo(title='上傳結果', message=res_js['data'])
+            if res_js['err_msg']:
+                messagebox.showerror(title='error log', message=res_js['err_msg'])
+        except FileNotFoundError:
+            messagebox.showerror(title='error', message=f'找不到指定路徑:{file_path}')
+        except Exception as e:
+            messagebox.showerror(title='error', message=f"{e}")
+            print(e)
 
+    @show_popout
     def get_seat_list(self, rt_cnt: int=0):
         if self.login_status is False:
             print('離線模式')
@@ -61,7 +100,9 @@ class backend_connenct(object):
                 return f"{e}, {r.json()}"
         elif r.status_code == 500:
             rt_cnt += 1
-            print(f'取得坐墊失敗，錯誤訊息{r.json()}，重試({rt_cnt})')
+            msg = f'取得坐墊失敗，錯誤訊息{r.json()}，重試({rt_cnt})'
+            print(msg)
+            self.pop_out.update_info(msg)
             return self.get_seat_list(rt_cnt)
         else:
             raise Exception(f"{r.json()}")

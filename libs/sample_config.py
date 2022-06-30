@@ -4,6 +4,7 @@ SA_EMAIL = "email@example.com"
 SA_PWD = "password"
 DEFAULT_BOARD_MODE = 3
 SERIAL_RT_COUNT = 20
+DEV_RUN_TIME = 15
 CLASS_MAP = {
   1:"坐姿-正",
   2:"坐姿-偏左",
@@ -25,3 +26,4 @@ class Config(object):
         self.default_board_mode = DEFAULT_BOARD_MODE
         self.class_map = CLASS_MAP
         self.serial_rt_count = SERIAL_RT_COUNT
+        self.sev_run_time = DEV_RUN_TIME
