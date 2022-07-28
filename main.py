@@ -174,7 +174,7 @@ def login_gui():
                     label['text'] = val                                                 # 寫壓力值
 
             
-        gui.after(500, btn_color_continuously)
+        gui.after(100, btn_color_continuously)
   
     def start():
         """Enable running by setting the global flag to True."""
@@ -355,8 +355,7 @@ def login_gui():
 
     # (1)坐姿-正 (2)坐姿-偏左 (3)坐姿-偏右 (4)坐姿-翹右腳 (5)坐姿-翹左腳 (6)坐姿-翹右二郎腿 
     # (7)坐姿-翹左二郎腿  (8)後仰
-    cb = ttk.Combobox(gui, value=["1", "2", "3", "4", "5", 
-                                    "6", "7", "8"], width=16, state="readonly")
+    cb = ttk.Combobox(gui, value=[*CLASS_MAP.keys()], width=16, state="readonly")
     cb.current(0)
     cb.place(x=180, y=640)
 
@@ -375,7 +374,7 @@ def login_gui():
     file = tk.Button(gui, text="Open", command=data_info)
     file.place(x=120, y=530)
 
-    bt_60s = tk.Button(gui, text="60sec", command=start_60s)
+    bt_60s = tk.Button(gui, text="15sec", command=start_60s)
     bt_60s.place(x=180, y=530) 
 
     bt_0s = tk.Button(gui, text="Reset", command=reset)

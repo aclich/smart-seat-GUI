@@ -140,8 +140,8 @@ def login_gui():
 
             x = [*data, int(gender), float(height), float(weight)]
             print('  predict', end='')
-            sit_pose: str = predictor.predict(model="RF", x=x, cvt_ch=False)
-            print('-done', end='')
+            sit_pose = predictor.predict(model="RF", x=x, cvt_ch=False)
+            print(f'-done, pose type=({type(sit_pose)})', end='')
 
             data_dict['data'] = data
             data_dict['seat_id'] = seat['id']
@@ -153,9 +153,10 @@ def login_gui():
             data_dict['sit_pos'] = str(sit_pose)
 
             sit_pose_str_var.set(f'3. 當前坐姿 : {CLASS_MAP[sit_pose]}')
-            pose_dict[CLASS_MAP[sit_pose]] += 1
-            pose_dict['總計'] += 1
-            update_pose_static(sit_pose_static(pose_dict))
+            if sit_pose != 0:
+                pose_dict[CLASS_MAP[sit_pose]] += 1
+                pose_dict['總計'] += 1
+                update_pose_static(sit_pose_static(pose_dict))
             if seconds % 30 == 1:
                 print('  bufferdata', end='')
                 BufferData(data_dict, file_path).start()
@@ -419,7 +420,7 @@ def login_gui():
     logo_lb3.place(x=200, y=0)
 
     pose_lbs = {}
-    for i in range(1,len(CLASS_MAP)+1):
+    for i in range(0,len(CLASS_MAP)):
         x = 20 if i < 5 else 300
         y = 80 + 50*((i-1)%4)
         p_lb = tk.Label(fifth_step, text=f"{CLASS_MAP[i]} : ", font="微軟正黑體 12", bg="Beige")

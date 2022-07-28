@@ -6,6 +6,7 @@ DEFAULT_BOARD_MODE = 3
 SERIAL_RT_COUNT = 20
 DEV_RUN_TIME = 15
 CLASS_MAP = {
+  0:"坐姿-空",
   1:"坐姿-正",
   2:"坐姿-偏左",
   3:"坐姿-偏右",
