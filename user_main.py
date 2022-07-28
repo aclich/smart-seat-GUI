@@ -5,17 +5,18 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import *
 from tkinter import messagebox, ttk
-from tkinter.constants import ANCHOR, TOP, S, X
+from tkinter.constants import TOP
 from tkinter.filedialog import askopenfilename
 
-from PIL import Image, ImageGrab, ImageTk
+from PIL import Image, ImageTk
 
 from libs.config import SA_EMAIL, SA_PWD, CLASS_MAP
 from libs.http_request import backend_connenct
 from libs.sensor.serial_port import init_boards
 from libs.sitpos_predict.classifier import classifier
-from libs.utils import pressure_cvt_color, sit_pose_static, carry_time, BufferData
+from libs.utils import check_data_folder, pressure_cvt_color, sit_pose_static, carry_time, BufferData
 
+check_data_folder(os.path.dirname(os.path.abspath(__file__)))
 
 sensor_seat = init_boards()
 

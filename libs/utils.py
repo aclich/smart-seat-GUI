@@ -56,3 +56,8 @@ class BufferData(threading.Thread):
         js.append(self.data_dict)
         json.dump(js, open(self.file_path, 'w+', encoding='utf-8'), ensure_ascii=False, indent=4)
         print('buffer thread done')
+
+def check_data_folder(base_path: str):
+    data_path = os.path.join(base_path, 'data')
+    if not os.path.isdir(data_path):
+        os.makedirs(data_path)
