@@ -50,8 +50,6 @@ entry_usr_pwd = tk.Entry(win, textvariable=var_usr_pwd, show='*')
 # entry_usr_pwd = tk.Entry(win, show='*')
 entry_usr_pwd.place(x=130, y=190)
 # data_dict = {"data": []}
-data_list = []
-data_order = [0,1,2,3,16,4,5,6,7,17,8,9,10,11,18,12,13,14,15,19,20,21,22,23,24]
 
 slider_time = 0
 seat_map = {}
@@ -103,7 +101,6 @@ def login_gui():
             sensors.append(mycanvas.create_rectangle(x, y, x+100, y+100, fill="white"))
             labels.append(mycanvas.create_text(x+15, y+10, text='0', state='hidden', font="微軟正黑體 12", tag="value"))
 
-    value_vars = [tk.IntVar(value=0) for _ in range(25)]
     def show_value():
         state = 'normal' if  status.get() == 1 else 'hidden'
         for label in labels:
@@ -224,7 +221,6 @@ def login_gui():
         for sensor, label in zip(sensors, labels):
             mycanvas.itemconfig(sensor, fill="white")
             mycanvas.itemconfig(label, text='0')
-        data_list = []
 
 
     def data_info(): #Open

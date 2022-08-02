@@ -1,5 +1,4 @@
 import json
-from random import randint
 import sys
 import glob
 import serial
@@ -123,7 +122,7 @@ def init_boards() -> Sensor_Board:
         print("No COM ports found!")
     for port in ports:
         try:
-            s = Serial(port)
+            s = Serial(port, timeout=0, write_timeout=1)
             time.sleep(1.2)
             t_count = 0
             while(s.in_waiting != 4):
@@ -150,7 +149,7 @@ def init_boards() -> Sensor_Board:
                     break
                 t_count += 1
 
-        except (serial.SerialException) as e:
+        except (serial.SerialException, TimeoutError) as e:
             print(f"port:{port}, error:{e}")
             s.close()
 
