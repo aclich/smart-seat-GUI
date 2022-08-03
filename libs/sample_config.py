@@ -1,7 +1,3 @@
-
-from libs.config import POSE_TIMEOUT
-
-
 SERVER_URL = "http://localhost:5000"
 SA_EMAIL = "email@example.com"
 SA_PWD = "password"
