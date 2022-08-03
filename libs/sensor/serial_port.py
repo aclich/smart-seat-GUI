@@ -122,7 +122,7 @@ def init_boards() -> Sensor_Board:
         print("No COM ports found!")
     for port in ports:
         try:
-            s = Serial(port, timeout=0, write_timeout=1)
+            s = Serial(port, timeout=10, write_timeout=1)
             time.sleep(1.2)
             t_count = 0
             while(s.in_waiting != 4):
@@ -146,6 +146,8 @@ def init_boards() -> Sensor_Board:
                 mod = s.write_readline(DEFAULT_BOARD_MODE) #設定板子預設模式
                 if f"Set board mode={DEFAULT_BOARD_MODE}" in mod :
                     print(ans, mod)
+                    s.reset_output_buffer()
+                    s.reset_input_buffer()
                     break
                 t_count += 1
 

@@ -150,8 +150,7 @@ def login_gui():
             data_dict['height'] = height
             data_dict['weight'] = weight
             data_dict['sit_pos'] = str(sit_pose)
-            sit_pose = 3
-            if last_pose != sit_pose or sit_pose in (0,1):
+            if sit_pose in (0,1):
                 pose_time = 0
             last_pose = sit_pose
 
@@ -160,7 +159,7 @@ def login_gui():
                 pose_dict[CLASS_MAP[sit_pose]] += 1
                 pose_dict['總計'] += 1
                 update_pose_static(sit_pose_static(pose_dict))
-            if seconds % 30 == 1:
+            if max(seconds-1, 0) % 30 == 0:
                 print('  bufferdata', end='')
                 BufferData(data_dict, file_path).start()
                 print('-done', end='')
@@ -184,7 +183,7 @@ def login_gui():
         global pose_time
         if pose_time >= POSE_TIMEOUT:
             pose_time = 0
-            msg = '提醒! 相同不標準坐姿已超過五分鐘!'
+            msg = '提醒! 不標準坐姿已超過五分鐘!'
             pop = tk.Toplevel()
             pop.geometry('+900+450')
             tk.Label(pop, text=msg).pack()
@@ -323,10 +322,7 @@ def login_gui():
 
 
             def set_ok():
-                global running
-                global seconds
-                global slider_time
-                global pause_time
+                global running, seconds, slider_time, pause_time
                 running = True
                 slider_time = slider.get()
                 setting.destroy()
