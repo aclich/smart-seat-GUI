@@ -10,7 +10,7 @@ from tkinter.filedialog import askopenfilename
 
 from PIL import Image, ImageTk
 
-from libs.config import SA_EMAIL, SA_PWD, CLASS_MAP
+from libs.config import SA_EMAIL, SA_PWD, CLASS_MAP, POSE_TIMEOUT
 from libs.http_request import backend_connenct
 from libs.sensor.serial_port import init_boards
 from libs.sitpos_predict.classifier import classifier
@@ -73,6 +73,8 @@ def user_login_web():
 #當登入成功時顯示的坐墊畫面
 running = False
 seconds = 0
+last_pose = None
+pose_time = 0
 pause_time = seconds
 capture_times = 0
 folder_name = ""
@@ -119,14 +121,13 @@ def login_gui():
         data_info = [DataInfo['seat_name'], DataInfo['file_path'], DataInfo['height'], DataInfo['weight'], DataInfo['gender']]
         return data_info
 
-
     def update_pose_static(pose_static):
         for k, v in pose_static.items():
             pose_lbs[k].configure(text=f"{k} : {v}")
 
     #Start, Stop 連續顯示顏色並暫停
     def btn_color_continuously():
-        global pose_dict
+        global pose_dict, pose_time, last_pose
         if running :
             print("btn_continue", end='')
             data_dict = {}
@@ -149,13 +150,16 @@ def login_gui():
             data_dict['height'] = height
             data_dict['weight'] = weight
             data_dict['sit_pos'] = str(sit_pose)
+            if sit_pose in (0,1):
+                pose_time = 0
+            last_pose = sit_pose
 
             sit_pose_str_var.set(f'3. 當前坐姿 : {CLASS_MAP[sit_pose]}')
             if sit_pose != 0:
                 pose_dict[CLASS_MAP[sit_pose]] += 1
                 pose_dict['總計'] += 1
                 update_pose_static(sit_pose_static(pose_dict))
-            if seconds % 30 == 1:
+            if max(seconds-1, 0) % 30 == 0:
                 print('  bufferdata', end='')
                 BufferData(data_dict, file_path).start()
                 print('-done', end='')
@@ -175,17 +179,27 @@ def login_gui():
         global seconds
         timming.configure(text=carry_time(seconds))
   
+    def pose_alarm():
+        global pose_time
+        if pose_time >= POSE_TIMEOUT:
+            pose_time = 0
+            msg = '提醒! 不標準坐姿已超過五分鐘!'
+            pop = tk.Toplevel()
+            pop.geometry('+900+450')
+            tk.Label(pop, text=msg).pack()
+            tk.Button(pop, text='確定', command=pop.destroy).pack()
+
     def start():
         """Enable running by setting the global flag to True."""
         print('start')
-        global running
-        global seconds
-        global pause_time
+        global running, seconds, pause_time, pose_time
         running = True
         if seconds < 9999:
             print('start-run')
-            seconds += 1 
+            seconds += 1
+            pose_time += 1
             set_timming()
+            pose_alarm()
             gui.after(1000, start)                           #每過500ms刷新一次
         else:
             print('stop')
@@ -195,9 +209,8 @@ def login_gui():
 
     def stop():
         """Stop running by setting the global flag to False."""
-        global running
-        global seconds
-        global pause_time
+        global running, seconds, pause_time, pose_time
+        pose_time = 0
         running = False
         pause_time = seconds
         seconds = 9999
@@ -309,10 +322,7 @@ def login_gui():
 
 
             def set_ok():
-                global running
-                global seconds
-                global slider_time
-                global pause_time
+                global running, seconds, slider_time, pause_time
                 running = True
                 slider_time = slider.get()
                 setting.destroy()
@@ -320,12 +330,12 @@ def login_gui():
                 gui.after(1, time_ok)
 
             def time_ok():
-                global running
-                global seconds
-                global slider_time
+                global running, seconds, slider_time, pose_time
                 if running:
                     if seconds < int(slider_time)*60:
                         seconds += 1 
+                        pose_time += 1
+                        pose_alarm()
                         set_timming()
                         gui.after(1000, time_ok)                       #每過1000ms刷新一次
                     else: 

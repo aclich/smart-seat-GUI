@@ -1,10 +1,14 @@
 
+from libs.config import POSE_TIMEOUT
+
+
 SERVER_URL = "http://localhost:5000"
 SA_EMAIL = "email@example.com"
 SA_PWD = "password"
 DEFAULT_BOARD_MODE = 3
-SERIAL_RT_COUNT = 20
+SERIAL_RT_COUNT = 3
 DEV_RUN_TIME = 15
+POSE_TIMEOUT = 300 #second
 CLASS_MAP = {
   0:"坐姿-空",
   1:"坐姿-正",
